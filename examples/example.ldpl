@@ -1,0 +1,6 @@
+IMPORT "../ltb.ldpl"
+IMPORT "token.ldpl"
+
+PROCEDURE:
+
+TG BOT INIT WITH TOKEN token

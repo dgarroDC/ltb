@@ -1,0 +1,7 @@
+DATA:
+
+token is text
+
+PROCEDURE:
+
+store "PASTE_YOUR_BOT_TOKEN_HERE" in token

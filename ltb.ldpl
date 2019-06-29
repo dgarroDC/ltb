@@ -1,6 +1,45 @@
-EXTENSION "ltb.cpp"
+EXTENSION "extensions/ltb_curl.cpp"
 FLAG "-lcurl"
+EXTENSION "extensions/ltb_json.cpp"
+
+DATA:
+
+# Base Telegram Bot API request URL (https://api.telegram.org/bot<token>/)
+ltb.baseUrl is text
+
+# ltb.curl.request url and response
+ltb.curl.url is external text
+ltb.curl.response is external text
+
+# ltb.json methods input and output (both in JSON format)
+ltb.json.input is external text
+ltb.json.output is external text
 
 PROCEDURE:
 
-call external ptb.curl.test
+# Initializes the bot (baseUrl) given its token
+sub ltb.botInit
+parameters:
+    token is text
+local data:
+    response is text
+procedure:
+    in ltb.baseUrl join "https://api.telegram.org/bot" token "/"
+    call ltb.request with "getMe" response
+    store response in ltb.json.input
+    call external ltb.json.getResult
+end sub
+create statement "TG BOT INIT WITH TOKEN $" executing ltb.botInit
+
+# Makes a Telegram Bot API request to:
+# https://api.telegram.org/bot<token>/<methodName>
+# and returns its response
+sub ltb.request
+parameters:
+    methodName is text
+    response is text
+procedure:
+    in ltb.curl.url join ltb.baseUrl methodName
+    call external ltb.curl.request
+    store ltb.curl.response in response
+end sub
