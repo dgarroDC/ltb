@@ -1,0 +1,6 @@
+EXTENSION "ltb.cpp"
+FLAG "-lcurl"
+
+PROCEDURE:
+
+call external ptb.curl.test
