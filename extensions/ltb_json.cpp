@@ -18,11 +18,16 @@ struct ldpl_list {
     vector<T> inner_collection;
 };
 #endif
+#define ldpl_number double
 
 string LTB_JSON_IN_JSON;
 string LTB_JSON_IN_VALUE;
 string LTB_JSON_OUT_TEXT;
 ldpl_list<string> LTB_JSON_OUT_TEXTLIST;
+void SETERRORCODE();
+ldpl_number LTB_EC;
+string LTB_ET;
+
 
 // Check if the request was successful from its response,
 // returning its 'result' field if OK, throwing error if not oK
@@ -31,7 +36,13 @@ void LTB_JSON_GETRESULT() {
     bool ok = j["ok"];
     if (!ok) {
         cerr << "LTB TG error #" << j["error_code"] << ": " << j["description"] << endl;
-        exit(1);
+        LTB_EC = 1;
+        LTB_ET = j["description"];
+        SETERRORCODE();
+    }else{
+        LTB_EC = 0;
+        LTB_ET = "";
+        SETERRORCODE();
     }
     LTB_JSON_OUT_TEXT = j["result"].dump();
 }
