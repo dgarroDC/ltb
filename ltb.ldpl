@@ -26,6 +26,9 @@ ltb.json.in.value is external text
 ltb.json.out.text is external text
 ltb.json.out.textlist is external text list
 
+# error code and text
+ltb.ec is number
+ltb.et is text
 PROCEDURE:
 
 # Initializes the bot given its token and process the updates
@@ -204,4 +207,9 @@ procedure:
 
         call ltb.onDeparture with messageId chatId userData
     end if
+end sub
+
+external sub seterrorcode
+    store ltb.ec in ERRORCODE
+    store ltb.et in ERRORTEXT
 end sub
