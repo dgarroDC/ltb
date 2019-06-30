@@ -78,6 +78,12 @@ procedure:
     push "chat_id" to ltb.curl.in.argNames
     store chatId in auxText # Convert to text
     push auxText to ltb.curl.in.argValues
+    push "action" to ltb.curl.in.argNames
+    push "typing" to ltb.curl.in.argValues
+    call ltb.request with "sendChatAction" auxText
+
+    delete last element of ltb.curl.in.argNames
+    delete last element of ltb.curl.in.argValues
     push "text" to ltb.curl.in.argNames
     push messageText to ltb.curl.in.argValues
     call ltb.request with "sendMessage" auxText
