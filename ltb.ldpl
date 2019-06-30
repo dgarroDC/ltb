@@ -134,4 +134,21 @@ procedure:
 
         call ltb.onMessage with messageId chatId userData messageText
     end if
+
+    store messageJson in ltb.json.in.json
+    store "new_chat_members" in ltb.json.in.value
+    call external ltb.json.getValue
+    if ltb.json.out.text is not equal to "" then
+        # Users joined
+        store ltb.json.out.text in ltb.json.in.json
+        call external ltb.json.getTextList
+        for each ltb.json.in.json in ltb.json.out.textlist do
+            for each key in userDataKeys do
+                store key in ltb.json.in.value
+                call external ltb.json.getValue
+                store ltb.json.out.text in userData:key
+            repeat
+        repeat
+        call ltb.onJoin with messageId chatId userData
+    end if
 end sub

@@ -5,13 +5,17 @@ PROCEDURE:
 
 TG BOT INIT WITH TOKEN token
 
+# This sub-procedure is called each time a new text message arrives.
+# Captions in animation, audio, document, photo, video or voice are captured too.
 sub ltb.onMessage
 parameters:
-    messageId is number
-    chatId is number
-    userData is text map
-    messageText is text
+    messageId is number     # id of the sent message
+    chatId is number        # id of the chat where is was sent
+    userData is text map    # user data from sender
+    messageText is text     # content of the message
 procedure:
+    display "================" crlf
+    display "New message!" crlf
     display messageId crlf
     display chatId crlf
     display messageText crlf
@@ -19,4 +23,23 @@ procedure:
     display userData:"first_name" crlf
     display userData:"last_name" crlf
     display userData:"username" crlf
+    display "================" crlf
+end sub
+
+# This sub-procedure is called each time a user join a chat.
+sub ltb.onJoin
+parameters:
+    messageId is number     # id of the sent message announcing the user join
+    chatId is number        # id of the chat where the user joined
+    userData is text map    # user data from the user who joined
+procedure:
+    display "================" crlf
+    display "New join!" crlf
+    display messageId crlf
+    display chatId crlf
+    display userData:"id" crlf
+    display userData:"first_name" crlf
+    display userData:"last_name" crlf
+    display userData:"username" crlf
+    display "================" crlf
 end sub
