@@ -40,8 +40,12 @@ void LTB_JSON_GETTEXTLIST() {
 // Get a value from a JSON, "" if not foud
 void LTB_JSON_GETVALUE() {
     json j = json::parse(LTB_JSON_IN_JSON);
-    if (j.find(LTB_JSON_IN_VALUE) != j.end())
-        LTB_JSON_OUT_TEXT = j[LTB_JSON_IN_VALUE].dump();
-    else
+    auto f = j.find(LTB_JSON_IN_VALUE);
+    if (f != j.end()) {
+        LTB_JSON_OUT_TEXT = f->dump();
+        if (f->type() == json::value_t::string)
+            LTB_JSON_OUT_TEXT = LTB_JSON_OUT_TEXT.substr(1, LTB_JSON_OUT_TEXT.size() - 2);
+    } else {
         LTB_JSON_OUT_TEXT = "";
+    }
 }
