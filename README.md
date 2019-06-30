@@ -86,4 +86,4 @@ See the [examples](examples) to learn more on how to use `ltb`. If you want to t
 
 ## License
 
-ptb is released under the MIT license. It uses the [JSON for Modern C++](https://github.com/nlohmann/json) library by Niels Lohmann, released also under the MIT license.
+`ltb` is released under the MIT license. It uses the [JSON for Modern C++](https://github.com/nlohmann/json) library by Niels Lohmann, released also under the MIT license.
