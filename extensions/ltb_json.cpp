@@ -24,26 +24,37 @@ string LTB_JSON_IN_JSON;
 string LTB_JSON_IN_VALUE;
 string LTB_JSON_OUT_TEXT;
 ldpl_list<string> LTB_JSON_OUT_TEXTLIST;
-void SETERRORCODE();
+
 ldpl_number LTB_EC;
 string LTB_ET;
 
+void SETERRORCODE();
 
 // Check if the request was successful from its response,
 // returning its 'result' field if OK, throwing error if not oK
 void LTB_JSON_GETRESULT() {
-    json j = json::parse(LTB_JSON_IN_JSON);
+    json j;
+    try {
+        j = json::parse(LTB_JSON_IN_JSON);
+    } catch (json::parse_error& e) {
+        LTB_ET = "LTB JSON parse error #" + to_string(e.id) + ": " + string(e.what())
+               + "\ninput JSON:\n" + LTB_JSON_IN_JSON;
+        LTB_EC = 1;
+        cerr << LTB_ET << endl;
+        SETERRORCODE();
+        return;
+    }
     bool ok = j["ok"];
     if (!ok) {
-        cerr << "LTB TG error #" << j["error_code"] << ": " << j["description"] << endl;
+        LTB_ET = "LTB TG error #" + j["error_code"].dump() + ": " + j["description"].dump();
         LTB_EC = 1;
-        LTB_ET = j["description"];
+        cerr << LTB_ET << endl;
         SETERRORCODE();
-    }else{
-        LTB_EC = 0;
-        LTB_ET = "";
-        SETERRORCODE();
+        return;
     }
+    LTB_EC = 0;
+    LTB_ET = "";
+    SETERRORCODE();
     LTB_JSON_OUT_TEXT = j["result"].dump();
 }
 

@@ -27,7 +27,9 @@ To start your bot, use this custom statement passing your bot's [token](https://
 
 `TG BOT INIT WITH TOKEN <TEXT or TEXT-VAR>`
 
-This statements will block your main code execution. After you execute it, `ltb` will process each update that your bot receives and calls a sub-procedure passing information about the new update. There are three of them, and you must implement it in your code:
+This statements will block your main code execution, unless there is a problem initializing the bot (network problem, invalid token, etc.), in which case it will set `ERRORCODE` in `1`, `ERRORTEXT` with the error description and return.
+
+After the bot is successfully initialized, `ltb` will process each update that your bot receives and calls a sub-procedure passing information about the new update. There are three of them, and you must implement it in your code:
 
 ```
 # This sub-procedure is called each time a new text message arrives.
@@ -80,7 +82,9 @@ You can send messages with this statement:
 
 `TG BOT SEND MESSAGE <TEXT or TEXT-VAR> TO <NUMBER or NUMBER-VAR>`
 
-It takes the message text and the chat id where you want to send it. You must use it after you `INIT` the bot.
+It takes the message text and the chat id where you want to send it. You must use it after you `INIT` the bot. If there is a problem delivering the message (network problem, invalid chat id, etc.), `ltb` will set `ERRORCODE` in `1` and `ERRORTEXT` with the error description.
+
+All `ltb` errors are logged to the *standard error*.
 
 See the [examples](examples) to learn more on how to use `ltb`. If you want to test them, paste your bot's token in [token.ldpl](examples/token.ldpl).
 

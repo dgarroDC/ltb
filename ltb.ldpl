@@ -27,8 +27,9 @@ ltb.json.out.text is external text
 ltb.json.out.textlist is external text list
 
 # error code and text
-ltb.ec is number
-ltb.et is text
+ltb.ec is external number
+ltb.et is external text
+
 PROCEDURE:
 
 # Initializes the bot given its token and process the updates
@@ -45,6 +46,9 @@ procedure:
     clear ltb.curl.in.argNames
     clear ltb.curl.in.argValues
     call ltb.request with "getMe" auxText
+    if errorcode is not equal to 0 then
+        return
+    end if
 
     while 1 is equal to 1 do # Check updates forever
         clear ltb.curl.in.argNames
@@ -55,6 +59,9 @@ procedure:
         push "timeout" to ltb.curl.in.argNames
         push "60" to ltb.curl.in.argValues
         call ltb.request with "getUpdates" ltb.json.in.json
+        if errorcode is not equal to 0 then
+            continue
+        end if
 
         call external ltb.json.getTextList
         copy ltb.json.out.textlist to auxtTextList
@@ -92,11 +99,13 @@ procedure:
     push "typing" to ltb.curl.in.argValues
     call ltb.request with "sendChatAction" auxText
 
-    delete last element of ltb.curl.in.argNames
-    delete last element of ltb.curl.in.argValues
-    push "text" to ltb.curl.in.argNames
-    push messageText to ltb.curl.in.argValues
-    call ltb.request with "sendMessage" auxText
+    if errorcode is equal to 0 then
+        delete last element of ltb.curl.in.argNames
+        delete last element of ltb.curl.in.argValues
+        push "text" to ltb.curl.in.argNames
+        push messageText to ltb.curl.in.argValues
+        call ltb.request with "sendMessage" auxText
+    end if
 end sub
 create statement "TG BOT SEND MESSAGE $ TO $" executing ltb.sendMessage
 
@@ -111,9 +120,11 @@ parameters:
 procedure:
     in ltb.curl.in.url join ltb.baseUrl methodName
     call external ltb.curl.request
-    store ltb.curl.out.response in ltb.json.in.json
-    call external ltb.json.getResult
-    store ltb.json.out.text in result
+    if errorcode is equal to 0 then
+        store ltb.curl.out.response in ltb.json.in.json
+        call external ltb.json.getResult
+        store ltb.json.out.text in result
+    end if
 end sub
 
 # Handles message json from an update
