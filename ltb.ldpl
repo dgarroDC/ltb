@@ -7,39 +7,70 @@ DATA:
 # Base Telegram Bot API request URL (https://api.telegram.org/bot<token>/)
 ltb.baseUrl is text
 
-# ltb.curl.request url and response
-ltb.curl.url is external text
-ltb.curl.response is external text
+# ltb.curl methods input and output
+ltb.curl.in.url is external text
+ltb.curl.in.argNames is external text list
+ltb.curl.in.argValues is external text list
+ltb.curl.out.response is external text
 
-# ltb.json methods input and output (both in JSON format)
-ltb.json.input is external text
-ltb.json.output is external text
+# ltb.json methods input and output
+ltb.json.in.json is external text
+ltb.json.in.value is external text
+ltb.json.out.text is external text
+ltb.json.out.textlist is external text list
 
 PROCEDURE:
 
-# Initializes the bot (baseUrl) given its token
+# Initializes the bot given its token and process the updates
 sub ltb.botInit
 parameters:
     token is text
 local data:
     response is text
+    updateObject is text
+    nextUpdateId is number
+    auxText is text
 procedure:
     in ltb.baseUrl join "https://api.telegram.org/bot" token "/"
-    call ltb.request with "getMe" response
-    store response in ltb.json.input
+
+    clear ltb.curl.in.argNames
+    clear ltb.curl.in.argValues
+    call ltb.request with "getMe" ltb.json.in.json
     call external ltb.json.getResult
+
+    while 1 is equal to 1 do # Check updates forever
+        clear ltb.curl.in.argNames
+        clear ltb.curl.in.argValues
+        push "offset" to ltb.curl.in.argNames
+        store nextUpdateId in auxText # Convert to text
+        push auxText to ltb.curl.in.argValues
+        call ltb.request with "getUpdates" ltb.json.in.json
+        call external ltb.json.getResult
+
+        store ltb.json.out.text in ltb.json.in.json
+        call external ltb.json.getTextList
+
+        for each ltb.json.in.json in ltb.json.out.textlist do
+            display ltb.json.in.json crlf
+            store "update_id" in ltb.json.in.value
+            call external ltb.json.getValue
+            store ltb.json.out.text in nextUpdateId
+            incr nextUpdateId
+        repeat
+    repeat
 end sub
 create statement "TG BOT INIT WITH TOKEN $" executing ltb.botInit
 
 # Makes a Telegram Bot API request to:
 # https://api.telegram.org/bot<token>/<methodName>
 # and returns its response
+# ltb.curl arguments must be set before calling this
 sub ltb.request
 parameters:
     methodName is text
     response is text
 procedure:
-    in ltb.curl.url join ltb.baseUrl methodName
+    in ltb.curl.in.url join ltb.baseUrl methodName
     call external ltb.curl.request
-    store ltb.curl.response in response
+    store ltb.curl.out.response in response
 end sub
