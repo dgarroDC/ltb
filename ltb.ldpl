@@ -28,6 +28,7 @@ parameters:
 local data:
     nextUpdateId is number
     auxText is text
+    auxtTextList is text list
 procedure:
     in ltb.baseUrl join "https://api.telegram.org/bot" token "/"
 
@@ -44,7 +45,9 @@ procedure:
         call ltb.request with "getUpdates" ltb.json.in.json
 
         call external ltb.json.getTextList
-        for each ltb.json.in.json in ltb.json.out.textlist do
+        copy ltb.json.out.textlist to auxtTextList
+        for each auxText in auxtTextList do
+            store auxText in ltb.json.in.json
             store "update_id" in ltb.json.in.value
             call external ltb.json.getValue
             store ltb.json.out.text in nextUpdateId
@@ -120,7 +123,6 @@ procedure:
         # Text message
         store ltb.json.out.text in messageText
 
-        store messageJson in ltb.json.in.json
         store "from" in ltb.json.in.value
         call external ltb.json.getValue
         if ltb.json.out.text is not equal to "" then
@@ -149,6 +151,23 @@ procedure:
                 store ltb.json.out.text in userData:key
             repeat
         repeat
+
         call ltb.onJoin with messageId chatId userData
+    end if
+
+
+    store messageJson in ltb.json.in.json
+    store "left_chat_member" in ltb.json.in.value
+    call external ltb.json.getValue
+    if ltb.json.out.text is not equal to "" then
+        # User left
+        store ltb.json.out.text in ltb.json.in.json
+        for each key in userDataKeys do
+            store key in ltb.json.in.value
+            call external ltb.json.getValue
+            store ltb.json.out.text in userData:key
+        repeat
+
+        call ltb.onDeparture with messageId chatId userData
     end if
 end sub
