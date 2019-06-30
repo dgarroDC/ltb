@@ -1,3 +1,10 @@
+// +---------------------------------+
+// |     ltb - LDPL Telegram Bot     |
+// +---------------------------------+
+// | by Damián Garro                 |
+// | https://github.com/dgarroDC/ltb |
+// +---------------------------------+
+
 #include <iostream>
 #include <vector>
 #include <curl/curl.h>

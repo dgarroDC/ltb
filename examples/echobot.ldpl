@@ -1,3 +1,14 @@
+# +------------------------------------------+
+# |         ltb - LDPL Telegram Bot          |
+# +------------------------------------------+
+# | by Damián Garro                          |
+# | https://github.com/dgarroDC/ltb          |
+# +------------------------------------------+
+# | Echobot example:                         |
+# | This bot repeats every sent message      |
+# | and when a user joins or leaves the chat |
+# +------------------------------------------+
+
 IMPORT "../ltb.ldpl"
 IMPORT "token.ldpl"
 
@@ -13,8 +24,11 @@ parameters:
     chatId is number        # id of the chat where is was sent
     userData is text map    # user data from sender
     messageText is text     # content of the message
+local data:
+    myMessage is text
 procedure:
-    TG BOT SEND MESSAGE messageText TO chatId
+    in myMessage join userData:"first_name" ": " messageText
+    TG BOT SEND MESSAGE myMessage TO chatId
 end sub
 
 # This sub-procedure is called each time a user joins a chat.
@@ -23,8 +37,11 @@ parameters:
     messageId is number     # id of the sent message announcing the user join
     chatId is number        # id of the chat the user joined
     userData is text map    # user data from the user who joined the chat
+local data:
+    myMessage is text
 procedure:
-    TG BOT SEND MESSAGE userData:"first_name" TO chatId
+    in myMessage join userData:"first_name" " joined the chat."
+    TG BOT SEND MESSAGE myMessage TO chatId
 end sub
 
 # This sub-procedure is called each time a user leaves a chat.
@@ -33,6 +50,9 @@ parameters:
     messageId is number     # id of the sent message announcing the user departure
     chatId is number        # id of the chat the user left
     userData is text map    # user data from the user who left the chat
+local data:
+    myMessage is text
 procedure:
-    TG BOT SEND MESSAGE userData:"first_name" TO chatId
+    in myMessage join userData:"first_name" " left the chat."
+    TG BOT SEND MESSAGE myMessage TO chatId
 end sub

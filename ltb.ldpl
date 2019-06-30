@@ -1,3 +1,10 @@
+# +---------------------------------+
+# |     ltb - LDPL Telegram Bot     |
+# +---------------------------------+
+# | by Damián Garro                 |
+# | https://github.com/dgarroDC/ltb |
+# +---------------------------------+
+
 EXTENSION "extensions/ltb_curl.cpp"
 FLAG "-lcurl"
 EXTENSION "extensions/ltb_json.cpp"
