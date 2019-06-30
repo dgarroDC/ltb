@@ -26,8 +26,6 @@ sub ltb.botInit
 parameters:
     token is text
 local data:
-    response is text
-    updateObject is text
     nextUpdateId is number
     auxText is text
 procedure:
@@ -35,8 +33,7 @@ procedure:
 
     clear ltb.curl.in.argNames
     clear ltb.curl.in.argValues
-    call ltb.request with "getMe" ltb.json.in.json
-    call external ltb.json.getResult
+    call ltb.request with "getMe" auxText
 
     while 1 is equal to 1 do # Check updates forever
         clear ltb.curl.in.argNames
@@ -45,17 +42,19 @@ procedure:
         store nextUpdateId in auxText # Convert to text
         push auxText to ltb.curl.in.argValues
         call ltb.request with "getUpdates" ltb.json.in.json
-        call external ltb.json.getResult
 
-        store ltb.json.out.text in ltb.json.in.json
         call external ltb.json.getTextList
-
         for each ltb.json.in.json in ltb.json.out.textlist do
-            display ltb.json.in.json crlf
             store "update_id" in ltb.json.in.value
             call external ltb.json.getValue
             store ltb.json.out.text in nextUpdateId
             incr nextUpdateId
+
+            store "message" in ltb.json.in.value
+            call external ltb.json.getValue
+            if ltb.json.out.text is not equal to "" then
+                call ltb.handleUpdateMessage with ltb.json.out.text
+            end if
         repeat
     repeat
 end sub
@@ -63,14 +62,76 @@ create statement "TG BOT INIT WITH TOKEN $" executing ltb.botInit
 
 # Makes a Telegram Bot API request to:
 # https://api.telegram.org/bot<token>/<methodName>
-# and returns its response
+# and returns its response result
 # ltb.curl arguments must be set before calling this
 sub ltb.request
 parameters:
     methodName is text
-    response is text
+    result is text
 procedure:
     in ltb.curl.in.url join ltb.baseUrl methodName
     call external ltb.curl.request
-    store ltb.curl.out.response in response
+    store ltb.curl.out.response in ltb.json.in.json
+    call external ltb.json.getResult
+    store ltb.json.out.text in result
+end sub
+
+# Handles message json from an update
+# Calls the correct user sub-procedures
+sub ltb.handleUpdateMessage
+parameters:
+    messageJsonParam is text
+local data:
+    messageJson is text
+    messageId is number
+    chatId is number
+    userData is text map
+    messageText is text
+    userDataKeys is text list
+    key is text
+procedure:
+    store messageJsonParam in messageJson
+
+    store messageJson in ltb.json.in.json
+    store "message_id" in ltb.json.in.value
+    call external ltb.json.getValue
+    store ltb.json.out.text in messageId
+
+    store "chat" in ltb.json.in.value
+    call external ltb.json.getValue
+    store ltb.json.out.text in ltb.json.in.json
+    store "id" in ltb.json.in.value
+    call external ltb.json.getValue
+    store ltb.json.out.text in chatId
+
+    push "id" to userDataKeys
+    push "first_name" to userDataKeys
+    push "second_name" to userDataKeys
+    push "username" to userDataKeys
+
+    store messageJson in ltb.json.in.json
+    store "text" in ltb.json.in.value
+    call external ltb.json.getValue
+    if ltb.json.out.text is equal to "" then
+        store "caption" in ltb.json.in.value
+        call external ltb.json.getValue
+    end if
+    if ltb.json.out.text is not equal to "" then
+        # Text message
+        store ltb.json.out.text in messageText
+
+        store messageJson in ltb.json.in.json
+        store "from" in ltb.json.in.value
+        call external ltb.json.getValue
+        if ltb.json.out.text is not equal to "" then
+            store ltb.json.out.text in ltb.json.in.json
+            for each key in userDataKeys do
+                store key in ltb.json.in.value
+                call external ltb.json.getValue
+                store ltb.json.out.text in userData:key
+            repeat
+        end if
+
+        call ltb.onMessage with messageId chatId userData messageText
+    end if
 end sub

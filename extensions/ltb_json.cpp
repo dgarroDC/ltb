@@ -37,8 +37,11 @@ void LTB_JSON_GETTEXTLIST() {
         LTB_JSON_OUT_TEXTLIST.inner_collection.push_back(element.dump());
 }
 
-// Get a value from a JSON
+// Get a value from a JSON, "" if not foud
 void LTB_JSON_GETVALUE() {
     json j = json::parse(LTB_JSON_IN_JSON);
-    LTB_JSON_OUT_TEXT = j[LTB_JSON_IN_VALUE].dump();
+    if (j.find(LTB_JSON_IN_VALUE) != j.end())
+        LTB_JSON_OUT_TEXT = j[LTB_JSON_IN_VALUE].dump();
+    else
+        LTB_JSON_OUT_TEXT = "";
 }

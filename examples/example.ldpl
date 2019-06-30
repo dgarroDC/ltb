@@ -4,3 +4,19 @@ IMPORT "token.ldpl"
 PROCEDURE:
 
 TG BOT INIT WITH TOKEN token
+
+sub ltb.onMessage
+parameters:
+    messageId is number
+    chatId is number
+    userData is text map
+    messageText is text
+procedure:
+    display messageId crlf
+    display chatId crlf
+    display messageText crlf
+    display userData:"id" crlf
+    display userData:"first_name" crlf
+    display userData:"last_name" crlf
+    display userData:"username" crlf
+end sub
