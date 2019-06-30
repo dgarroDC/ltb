@@ -1,0 +1,80 @@
+# +--------------------------------------------+
+# |          ltb - LDPL Telegram Bot           |
+# +--------------------------------------------+
+# | by Damián Garro                            |
+# | https://github.com/dgarroDC/ltb            |
+# +--------------------------------------------+
+# | LDPLDocBot example:                        |
+# | This bot responds to the command /ldpldoc  |
+# | sending information about a LDPL statement |
+# +--------------------------------------------+
+
+IMPORT "../ltb.ldpl"
+IMPORT "token.ldpl"
+
+DATA:
+
+# Stataments information
+quickinfo is text map
+docurl is text map
+
+PROCEDURE:
+
+# Load the statements info
+store "The DISPLAY statement outputs the values passed to the output stream." in quickinfo:"DISPLAY"
+store "https://docs.ldpl-lang.org/i-o-statements/display" in docurl:"DISPLAY"
+store "The ACCEPT command is used to gather input from the user." in quickinfo:"ACCEPT"
+store "https://docs.ldpl-lang.org/i-o-statements/accept" in docurl:"ACCEPT"
+store "The RETURN statement returns from a SUB-PROCEDURE." in quickinfo:"RETURN"
+store "https://docs.ldpl-lang.org/control-flow-statements/return" in docurl:"RETURN"
+# ...
+
+TG BOT INIT WITH TOKEN token
+
+# This sub-procedure is called each time a new text message arrives.
+# Captions in animation, audio, document, photo, video or voice are captured too.
+sub ltb.onMessage
+parameters:
+    messageId is number     # id of the sent message
+    chatId is number        # id of the chat where is was sent
+    userData is text map    # user data from sender
+    messageText is text     # content of the message
+local data:
+    myMessage is text
+    i is number
+    statement is text
+procedure:
+    get index of "/ldpldoc" from messageText in i
+    if i is equal to 0 then
+        store length of messageText in i
+        in i solve i - 8
+        substring messageText from 8 length i in statement
+        trim statement in statement
+        if quickinfo:statement is not equal to "" then
+            in myMessage join quickinfo:statement crlf "👉 More info: " docurl:statement
+        else
+            in myMessage join "I'm sorry, I don't know anything about the '" statement "' statement. :("
+        end if
+        TG BOT SEND MESSAGE myMessage TO chatId
+    end if
+end sub
+
+# This sub-procedure is called each time a user joins a chat.
+sub ltb.onJoin
+parameters:
+    messageId is number     # id of the sent message announcing the user join
+    chatId is number        # id of the chat the user joined
+    userData is text map    # user data from the user who joined the chat
+procedure:
+    # I don't use this sub-procedure :)
+end sub
+
+# This sub-procedure is called each time a user leaves a chat.
+sub ltb.onDeparture
+parameters:
+    messageId is number     # id of the sent message announcing the user departure
+    chatId is number        # id of the chat the user left
+    userData is text map    # user data from the user who left the chat
+procedure:
+    # I don't use this sub-procedure :)
+end sub
