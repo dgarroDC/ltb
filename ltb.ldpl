@@ -42,6 +42,8 @@ procedure:
         push "offset" to ltb.curl.in.argNames
         store nextUpdateId in auxText # Convert to text
         push auxText to ltb.curl.in.argValues
+        push "timeout" to ltb.curl.in.argNames
+        push "60" to ltb.curl.in.argValues
         call ltb.request with "getUpdates" ltb.json.in.json
 
         call external ltb.json.getTextList
