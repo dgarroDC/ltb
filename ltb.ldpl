@@ -45,10 +45,13 @@ procedure:
 
     clear ltb.curl.in.argNames
     clear ltb.curl.in.argValues
-    call ltb.request with "getMe" auxText
+    call ltb.request with "getMe" ltb.json.in.json
     if errorcode is not equal to 0 then
         return
     end if
+    store "username" in ltb.json.in.value
+    call external ltb.json.getValue
+    display "LTB: @" ltb.json.out.text " successfully initialized! 🎉" crlf
 
     while 1 is equal to 1 do # Check updates forever
         clear ltb.curl.in.argNames
