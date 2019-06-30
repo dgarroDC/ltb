@@ -7,9 +7,9 @@ It provides two new statements:
 * `TG BOT SEND MESSAGE <TEXT or TEXT-VAR> TO <NUMBER or NUMBER-VAR>`
 
 And it announces you about new updates via the following sub-procedures that you must implement:
-* ltb.onMessage
-* ltb.onJoin
-* ltb.onDeparture
+* `ltb.onMessage`
+* `ltb.onJoin`
+* `ltb.onDeparture`
 
 ## Installation
 
