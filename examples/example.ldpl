@@ -14,16 +14,7 @@ parameters:
     userData is text map    # user data from sender
     messageText is text     # content of the message
 procedure:
-    display "================" crlf
-    display "New message!" crlf
-    display messageId crlf
-    display chatId crlf
-    display messageText crlf
-    display userData:"id" crlf
-    display userData:"first_name" crlf
-    display userData:"last_name" crlf
-    display userData:"username" crlf
-    display "================" crlf
+    TG BOT SEND MESSAGE messageText TO chatId
 end sub
 
 # This sub-procedure is called each time a user joins a chat.
@@ -33,15 +24,7 @@ parameters:
     chatId is number        # id of the chat the user joined
     userData is text map    # user data from the user who joined the chat
 procedure:
-    display "================" crlf
-    display "New join!" crlf
-    display messageId crlf
-    display chatId crlf
-    display userData:"id" crlf
-    display userData:"first_name" crlf
-    display userData:"last_name" crlf
-    display userData:"username" crlf
-    display "================" crlf
+    TG BOT SEND MESSAGE userData:"first_name" TO chatId
 end sub
 
 # This sub-procedure is called each time a user leaves a chat.
@@ -51,13 +34,5 @@ parameters:
     chatId is number        # id of the chat the user left
     userData is text map    # user data from the user who left the chat
 procedure:
-    display "================" crlf
-    display "New departure!" crlf
-    display messageId crlf
-    display chatId crlf
-    display userData:"id" crlf
-    display userData:"first_name" crlf
-    display userData:"last_name" crlf
-    display userData:"username" crlf
-    display "================" crlf
+    TG BOT SEND MESSAGE userData:"first_name" TO chatId
 end sub

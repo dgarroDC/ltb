@@ -65,6 +65,25 @@ procedure:
 end sub
 create statement "TG BOT INIT WITH TOKEN $" executing ltb.botInit
 
+# Sends a message to a chat
+sub ltb.sendMessage
+parameters:
+    messageText is text
+    chatId is number
+local data:
+    auxText is text
+procedure:
+    clear ltb.curl.in.argNames
+    clear ltb.curl.in.argValues
+    push "chat_id" to ltb.curl.in.argNames
+    store chatId in auxText # Convert to text
+    push auxText to ltb.curl.in.argValues
+    push "text" to ltb.curl.in.argNames
+    push messageText to ltb.curl.in.argValues
+    call ltb.request with "sendMessage" auxText
+end sub
+create statement "TG BOT SEND MESSAGE $ TO $" executing ltb.sendMessage
+
 # Makes a Telegram Bot API request to:
 # https://api.telegram.org/bot<token>/<methodName>
 # and returns its response result
