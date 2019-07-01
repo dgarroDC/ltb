@@ -193,6 +193,19 @@ parameters:
 local data:
     auxText is text
 procedure:
+    call ltb.sendMessageWithInlineKeyboard with messageText chatId ""
+end sub
+create statement "TG BOT SEND MESSAGE $ TO $" executing ltb.sendMessage
+
+# Sends a message with inline keyboad to a chat
+sub ltb.sendMessageWithInlineKeyboard
+parameters:
+    messageText is text
+    chatId is number
+    inlineKeyboard is text
+local data:
+    auxText is text
+procedure:
     clear ltb.curl.in.argNames
     clear ltb.curl.in.argValues
     push "chat_id" to ltb.curl.in.argNames
@@ -207,10 +220,81 @@ procedure:
         delete last element of ltb.curl.in.argValues
         push "text" to ltb.curl.in.argNames
         push messageText to ltb.curl.in.argValues
+        if inlineKeyboard is not equal to "" then
+            push "reply_markup" to ltb.curl.in.argNames
+            push inlineKeyboard to ltb.curl.in.argValues
+        end if
         call ltb.request with "sendMessage" auxText
     end if
 end sub
-create statement "TG BOT SEND MESSAGE $ TO $" executing ltb.sendMessage
+create statement "TG BOT SEND MESSAGE $ TO $ WITH INLINE KEYBOARD $" executing ltb.sendMessageWithInlineKeyboard
+
+# +------------------------------+
+# | Inline keyboard construction |
+# +------------------------------+
+
+# Creates an empty inline keyboard
+sub ltb.createInlineKeyboard
+parameters:
+    inlineKeyboard is text
+procedure:
+    store "{\"inline_keyboard\":[[]]}" in inlineKeyboard
+end sub
+create statement "TG BOT CREATE INLINE KEYBOARD IN $" executing ltb.createInlineKeyboard
+
+# Adds empty row to inline keyboard
+sub ltb.addRow
+parameters:
+    inlineKeyboard is text
+procedure:
+    replace "]]}" from inlineKeyboard with "],[]]}" in inlineKeyboard
+end sub
+create statement "TG BOT ADD ROW TO INLINE KEYBOARD $" executing ltb.addRow
+
+# Adds button with url to inline keyboard
+sub ltb.addUrlButton
+parameters:
+    text is text
+    url is text
+    inlineKeyboard is text
+procedure:
+    call ltb.addButton with text url "url" inlineKeyboard
+end sub
+create statement "TG BOT ADD BUTTON WITH TEXT $ AND URL $ TO INLINE KEYBOARD $" executing ltb.addUrlButton
+
+# Adds button with callback data to inline keyboard
+sub ltb.addCallbackDataButton
+parameters:
+    text is text
+    callbackData is text
+    inlineKeyboard is text
+procedure:
+    call ltb.addButton with text callbackData "callback_data" inlineKeyboard
+end sub
+create statement "TG BOT ADD BUTTON WITH TEXT $ AND CALLBACK DATA $ TO INLINE KEYBOARD $" executing ltb.addCallbackDataButton
+
+# Adds button with url or callback data to inline keyboard
+sub ltb.addButton
+parameters:
+    text is text
+    data is text
+    dataType is text # "url" or "callback_data"
+    inlineKeyboard is text
+local data:
+    length is number
+    i is number
+    button is text
+procedure:
+    in button join "{\"text\":\"" text "\",\"" dataType "\":\"" data "\"}]]}"
+    store length of inlineKeyboard in length
+    subtract 4 from length in length
+    get index of "[]]}" from inlineKeyboard in i
+    if i is not equal to length then
+        # Last row is not empty
+        join "," and button in button
+    end if
+    replace "]]}" from inlineKeyboard with button in inlineKeyboard
+end sub
 
 # +-------------------------------+
 # | General helper SUB-PROCEDUREs |
