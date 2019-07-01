@@ -2,14 +2,18 @@
 
 This simple LDPL library lets you create a Telegram bot that can receive and send text messages.
 
-It provides two new statements:
+It provides some new statements:
 * `TG BOT INIT WITH TOKEN <TEXT or TEXT-VAR>`
-* `TG BOT SEND MESSAGE <TEXT or TEXT-VAR> TO <NUMBER or NUMBER-VAR>`
+* `TG BOT SEND MESSAGE <TEXT or TEXT-VAR> TO <NUMBER or NUMBER-VAR> [WITH INLINE KEYBOARD <TEXT or TEX-VAR>]`
+* `TG BOT CREATE INLINE KEYBOARD IN <TEXT-VAR>`
+* `TG BOT ADD ROW TO INLINE KEYBOARD <TEXT-VAR>`
+* `TG BOT ADD BUTTON WITH TEXT <TEXT or TEXT-VAR> AND {URL | CALLBACK DATA} <TEXT or TEXT-VAR> TO INLINE KEYBOARD <TEXT-VAR>`
 
-And it announces you about new updates via the following sub-procedures that you must implement:
+And it announces you about new updates via the following sub-procedures that you must implement so you can handle them if you want:
 * `ltb.onMessage`
 * `ltb.onJoin`
 * `ltb.onDeparture`
+* `ltb.onCallbackQuery`
 
 ## Installation
 
@@ -27,9 +31,9 @@ To start your bot, use this custom statement passing your bot's [token](https://
 
 `TG BOT INIT WITH TOKEN <TEXT or TEXT-VAR>`
 
-This statements will block your main code execution, unless there is a problem initializing the bot (network problem, invalid token, etc.), in which case it will set `ERRORCODE` in `1`, `ERRORTEXT` with the error description and return.
+This statement will block your main code execution, unless there is a problem initializing the bot (network problem, invalid token, etc.), in which case it will set `ERRORCODE` in `1`, `ERRORTEXT` with the error description and return.
 
-After the bot is successfully initialized, `ltb` will process each update that your bot receives and calls a sub-procedure passing information about the new update. There are three of them, and you must implement it in your code:
+After the bot is successfully initialized, `ltb` will process each update that your bot receives and calls a sub-procedure passing information about the new update. There are four of them, and you must implement it in your code:
 
 ```
 # This sub-procedure is called each time a new text message arrives.
@@ -63,6 +67,18 @@ parameters:
 procedure:
     # Your code here
 end sub
+
+# This sub-procedure is called each time a user press a button with callback data.
+sub ltb.onCallbackQuery
+parameters:
+    chatId is number        # id of the chat from the message of the button that was pressed
+    userData is text map    # user data from the user who pressed the button
+    callbackData is text    # callback data from the pressed button
+    answerText is text      # store a text here to display a notification to the user
+    answerAlert is number   # store 1 here to show answerText as an alert instead of a notification at the top of the chat screen
+procedure:
+    # Your code here
+end sub
 ```
 
 All of the three sub-procedures must be declared with all the parameters specified above, but you may leave a `procedure:` subsection empty if you don't want to do anything on some updates.
@@ -80,9 +96,27 @@ Bear in mind that some of this elements may be empty (`""`), a message from a ch
 
 You can send messages with this statement:
 
-`TG BOT SEND MESSAGE <TEXT or TEXT-VAR> TO <NUMBER or NUMBER-VAR>`
+`TG BOT SEND MESSAGE <TEXT or TEXT-VAR> TO <NUMBER or NUMBER-VAR> [WITH INLINE KEYBOARD <TEXT or TEX-VAR>]`
 
 It takes the message text and the chat id where you want to send it. You must use it after you `INIT` the bot. If there is a problem delivering the message (network problem, invalid chat id, etc.), `ltb` will set `ERRORCODE` in `1` and `ERRORTEXT` with the error description.
+
+You can also optionally send the message with an inline keyboard. The `TEXT` you pass here must be a serialized JSON of a [InlineKeyboardMarkup object](https://core.telegram.org/bots/api#inlinekeyboardmarkup), but don't worry, you can construct it with `ltb` statements:
+
+`TG BOT CREATE INLINE KEYBOARD IN <TEXT-VAR>`
+
+This statement stores in the variable an inline keyboard with an empty row.
+
+`TG BOT ADD ROW TO INLINE KEYBOARD <TEXT-VAR>`
+
+This statement modifies the inline keyboard appending an empty row at the end
+
+`TG BOT ADD BUTTON WITH TEXT <TEXT or TEXT-VAR> AND {URL | CALLBACK DATA} <TEXT or TEXT-VAR> TO INLINE KEYBOARD <TEXT-VAR>`
+
+This statement modifies thee inline keyboard appending a button at the end of its last row. You must specify the the text of the button's label and:
+* an URL that will be opened when an user press the button, or
+* callback data that will be send to `ltb.onCallbackQuery` and lets you handle and answering it.
+
+**Warning**: The last two statements are only guaranteed to work with inline keyboards that you created and modified with `ltb` statements. That means that if you pass some `InlineKeyboardMarkup` that you made manually or with some other tools, the statements may modify them in such a way that the text becomes an invalid `InlineKeyboardMarkup`.
 
 All `ltb` errors are logged to the *standard error*.
 

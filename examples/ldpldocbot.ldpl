@@ -1,13 +1,17 @@
-# +--------------------------------------------+
-# |          ltb - LDPL Telegram Bot           |
-# +--------------------------------------------+
-# | by Damián Garro                            |
-# | https://github.com/dgarroDC/ltb            |
-# +--------------------------------------------+
-# | LDPLDocBot example:                        |
-# | This bot responds to the command /ldpldoc  |
-# | sending information about a LDPL statement |
-# +--------------------------------------------+
+# +-----------------------------------------------------+
+# |               ltb - LDPL Telegram Bot               |
+# +-----------------------------------------------------+
+# | by Damián Garro                                     |
+# | https://github.com/dgarroDC/ltb                     |
+# +-----------------------------------------------------+
+# | LDPLDocBot example:                                 |
+# | This bot responds to the commands:                  |
+# | * /ldpldoc <statatement>:                           |
+# |   returns information about a LDPL statement        |
+# | * /ldplall:                                         |
+# |   shows a keyboard with LDPL statements as buttons, |
+# |   if you press one it displays information about it |
+# +-----------------------------------------------------+
 
 IMPORT "../ltb.ldpl"
 IMPORT "token.ldpl"
@@ -43,6 +47,10 @@ local data:
     myMessage is text
     i is number
     statement is text
+    inlineKeyboard is text
+    key is text
+    keys is text map
+    callbackData is text
 procedure:
     get index of "/ldpldoc" from messageText in i
     if i is equal to 0 then
@@ -56,6 +64,19 @@ procedure:
             in myMessage join "I'm sorry, I don't know anything about the '" statement "' statement. :("
         end if
         TG BOT SEND MESSAGE myMessage TO chatId
+    end if
+
+    get index of "/ldplall" from messageText in i
+    if i is equal to 0 then
+        TG BOT CREATE INLINE KEYBOARD IN inlineKeyboard
+        store 0 in i
+        store keys of quickinfo in keys
+        for each key in keys do
+            TG BOT ADD BUTTON WITH TEXT key AND CALLBACK DATA key TO INLINE KEYBOARD inlineKeyboard
+        repeat
+        TG BOT ADD ROW TO INLINE KEYBOARD inlineKeyboard
+        TG BOT ADD BUTTON WITH TEXT "Read the docs!" AND URL "https://docs.ldpl-lang.org/" TO INLINE KEYBOARD inlineKeyboard
+        TG BOT SEND MESSAGE "Press a button to learn something about the statement:" TO chatId WITH INLINE KEYBOARD inlineKeyboard
     end if
 end sub
 
@@ -77,4 +98,17 @@ parameters:
     userData is text map    # user data from the user who left the chat
 procedure:
     # I don't use this sub-procedure :)
+end sub
+
+# This sub-procedure is called each time a user press a button with callback data.
+sub ltb.onCallbackQuery
+parameters:
+    chatId is number        # id of the chat from the message of the button that was pressed
+    userData is text map    # user data from the user who pressed the button
+    callbackData is text    # callback data from the pressed button
+    answerText is text      # store a text here to display a notification to the user
+    answerAlert is number   # store 1 here to show answerText as an alert instead of a notification at the top of the chat screen
+procedure:
+    in answerText join "Here is the " callbackData " info, " userData:"first_name" ":\n" quickinfo:callbackData
+    store 1 in answerAlert
 end sub

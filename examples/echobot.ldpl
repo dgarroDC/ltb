@@ -56,3 +56,15 @@ procedure:
     in myMessage join userData:"first_name" " left the chat."
     TG BOT SEND MESSAGE myMessage TO chatId
 end sub
+
+# This sub-procedure is called each time a user press a button with callback data.
+sub ltb.onCallbackQuery
+parameters:
+    chatId is number        # id of the chat from the message of the button that was pressed
+    userData is text map    # user data from the user who pressed the button
+    callbackData is text    # callback data from the pressed button
+    answerText is text      # store a text here to display a notification to the user
+    answerAlert is number   # store 1 here to show answerText as an alert instead of a notification at the top of the chat screen
+procedure:
+    # I don't use this sub-procedure :)
+end sub
