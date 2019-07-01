@@ -83,13 +83,20 @@ procedure:
             call external ltb.json.getValue
             if ltb.json.out.text is not equal to "" then
                 call ltb.handleUpdateMessage with ltb.json.out.text
+                continue
+            end if
+
+            store "callback_query" in ltb.json.in.value
+            call external ltb.json.getValue
+            if ltb.json.out.text is not equal to "" then
+                call ltb.handleUpdateCallbackQuery with ltb.json.out.text
             end if
         repeat
     repeat
 end sub
 create statement "TG BOT INIT WITH TOKEN $" executing ltb.botInit
 
-# Handles message json from an update
+# Handles message JSON from an update
 # Calls the correct user sub-procedures
 sub ltb.handleUpdateMessage
 parameters:
@@ -179,6 +186,77 @@ procedure:
 
         call ltb.onDeparture with messageId chatId userData
     end if
+end sub
+
+# Handles callback query JSON from an update
+# Calls the correct user sub-procedures
+sub ltb.handleUpdateCallbackQuery
+parameters:
+    callbackQueryJsonParam is text
+local data:
+    callbackQueryJson is text
+    chatId is number
+    userData is text map
+    callbackData is text
+    userDataKeys is text list
+    callbackId is text
+    key is text
+    auxText is text
+    answerText is text
+    answerAlert is number
+procedure:
+    store callbackQueryJsonParam in callbackQueryJson
+
+    store callbackQueryJson in ltb.json.in.json
+    store "message" in ltb.json.in.value
+    call external ltb.json.getValue
+    store ltb.json.out.text in ltb.json.in.json
+    store "chat" in ltb.json.in.value
+    call external ltb.json.getValue
+    store ltb.json.out.text in ltb.json.in.json
+    store "id" in ltb.json.in.value
+    call external ltb.json.getValue
+    store ltb.json.out.text in chatId
+
+    store callbackQueryJson in ltb.json.in.json
+    store "from" in ltb.json.in.value
+    call external ltb.json.getValue
+    store ltb.json.out.text in ltb.json.in.json
+    push "id" to userDataKeys
+    push "first_name" to userDataKeys
+    push "second_name" to userDataKeys
+    push "username" to userDataKeys
+    for each key in userDataKeys do
+        store key in ltb.json.in.value
+        call external ltb.json.getValue
+        store ltb.json.out.text in userData:key
+    repeat
+
+    store callbackQueryJson in ltb.json.in.json
+    store "data" in ltb.json.in.value
+    call external ltb.json.getValue
+    store ltb.json.out.text in callbackData
+
+    call ltb.onCallbackQuery with chatId userData callbackData answerText answerAlert
+
+    # Answer the query
+    store callbackQueryJson in ltb.json.in.json
+    store "id" in ltb.json.in.value
+    call external ltb.json.getValue
+    store ltb.json.out.text in callbackId
+    clear ltb.curl.in.argNames
+    clear ltb.curl.in.argValues
+    push "callback_query_id" to ltb.curl.in.argNames
+    push ltb.json.out.text to ltb.curl.in.argValues
+    if answerText is not equal to "" then
+        push "text" to ltb.curl.in.argNames
+        push answerText to ltb.curl.in.argValues
+        if answerAlert is equal to 1 then
+            push "show_alert" to ltb.curl.in.argNames
+            push "true" to ltb.curl.in.argValues
+        end if
+    end if
+    call ltb.request with "answerCallbackQuery" auxText
 end sub
 
 # +------------------+
