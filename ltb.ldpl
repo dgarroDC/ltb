@@ -289,21 +289,13 @@ procedure:
     push "chat_id" to ltb.curl.in.argNames
     store chatId in auxText # Convert to text
     push auxText to ltb.curl.in.argValues
-    push "action" to ltb.curl.in.argNames
-    push "typing" to ltb.curl.in.argValues
-    call ltb.request with "sendChatAction" auxText
-
-    if errorcode is equal to 0 then
-        delete last element of ltb.curl.in.argNames
-        delete last element of ltb.curl.in.argValues
-        push "text" to ltb.curl.in.argNames
-        push messageText to ltb.curl.in.argValues
-        if inlineKeyboard is not equal to "" then
-            push "reply_markup" to ltb.curl.in.argNames
-            push inlineKeyboard to ltb.curl.in.argValues
-        end if
-        call ltb.request with "sendMessage" auxText
+    push "text" to ltb.curl.in.argNames
+    push messageText to ltb.curl.in.argValues
+    if inlineKeyboard is not equal to "" then
+        push "reply_markup" to ltb.curl.in.argNames
+        push inlineKeyboard to ltb.curl.in.argValues
     end if
+    call ltb.request with "sendMessage" auxText
 end sub
 create statement "TG BOT SEND MESSAGE $ TO $ WITH INLINE KEYBOARD $" executing ltb.sendMessageWithInlineKeyboard
 
