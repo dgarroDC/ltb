@@ -27,7 +27,8 @@ parameters:
 local data:
     myMessage is text
 procedure:
-    in myMessage join userData:"first_name" ": " messageText
+    in myMessage join "*" userData:"first_name" "*: " messageText
+    store "Markdown" in ltb.send.options:"format"
     TG BOT SEND MESSAGE myMessage TO chatId
 end sub
 

@@ -11,6 +11,9 @@ EXTENSION "extensions/ltb_json.cpp"
 
 DATA:
 
+# Public to the user
+ltb.send.options is text map
+
 # Base Telegram Bot API request URL (https://api.telegram.org/bot<token>/)
 ltb.baseUrl is text
 
@@ -295,7 +298,12 @@ procedure:
         push "reply_markup" to ltb.curl.in.argNames
         push inlineKeyboard to ltb.curl.in.argValues
     end if
+    if ltb.send.options:"format" is not equal to "" then
+        push "parse_mode" to ltb.curl.in.argNames
+        push ltb.send.options:"format" to ltb.curl.in.argValues
+    end if
     call ltb.request with "sendMessage" auxText
+    clear ltb.send.options
 end sub
 create statement "TG BOT SEND MESSAGE $ TO $ WITH INLINE KEYBOARD $" executing ltb.sendMessageWithInlineKeyboard
 
