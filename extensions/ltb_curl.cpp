@@ -48,12 +48,15 @@ void LTB_CURL_REQUEST(){
     // URL query string
     string url = LTB_CURL_IN_URL;
     string name, value;
+    char * e_name, * e_value;
     for (int i = 0; i < LTB_CURL_IN_ARGNAMES.inner_collection.size(); i++) {
         name = LTB_CURL_IN_ARGNAMES.inner_collection[i];
         value = LTB_CURL_IN_ARGVALUES.inner_collection[i];
-        url += (i == 0 ? "?" : "&")
-             + string(curl_easy_escape(curl, name.c_str(), name.size())) + "="
-             + string(curl_easy_escape(curl, value.c_str(), value.size()));
+        e_name = curl_easy_escape(curl, name.c_str(), name.size());
+        e_value = curl_easy_escape(curl, value.c_str(), value.size());
+        url += (i == 0 ? "?" : "&") + string(e_name) + "=" + string(e_value);
+        curl_free(e_name);
+        curl_free(e_value);
     }
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &LTB_CURL_OUT_RESPONSE);
@@ -61,6 +64,7 @@ void LTB_CURL_REQUEST(){
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L);
     LTB_CURL_OUT_RESPONSE = "";
     CURLcode res = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
     if (res != CURLE_OK) {
         LTB_ET = "LTB curl error: " + string(curl_easy_strerror(res))
                + "\nduring request " + LTB_CURL_IN_URL;
@@ -69,7 +73,6 @@ void LTB_CURL_REQUEST(){
         SETERRORCODE();
         return;
     }
-    curl_easy_cleanup(curl);
     LTB_EC = 0;
     LTB_ET = "";
     SETERRORCODE();
