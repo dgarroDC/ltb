@@ -302,6 +302,10 @@ procedure:
         push "parse_mode" to ltb.curl.in.argNames
         push ltb.send.options:"format" to ltb.curl.in.argValues
     end if
+    if ltb.send.options:"disable_preview" is not equal to "" then
+        push "disable_web_page_preview" to ltb.curl.in.argNames
+        push "true" to ltb.curl.in.argValues
+    end if
     call ltb.request with "sendMessage" auxText
     clear ltb.send.options
 end sub
