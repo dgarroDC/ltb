@@ -1,6 +1,6 @@
-# ltb - LDPL Telegram Bot
+![The LDPL Telegram Bot Library](images/ldpl-telegram-logo.png)
 
-This simple LDPL library lets you create a Telegram bot that can receive and send text messages.
+**The LDPL Telegram Bot Library** is a simple LDPL library lets you create a Telegram bot that can receive and send text messages.
 
 It provides some new statements:
 * `TG BOT INIT WITH TOKEN <TEXT or TEXT-VAR>`
