@@ -1,6 +1,6 @@
-# ltb - LDPL Telegram Bot
+![The LDPL Telegram Bot Library](images/ldpl-telegram-logo.png)
 
-This simple LDPL library lets you create a Telegram bot that can receive and send text messages.
+**The LDPL Telegram Bot Library** is a simple LDPL library lets you create a Telegram bot that can receive and send text messages.
 
 It provides two new statements:
 * `TG BOT INIT WITH TOKEN <TEXT or TEXT-VAR>`
@@ -13,7 +13,7 @@ And it announces you about new updates via the following sub-procedures that you
 
 ## Installation
 
-This library requires [LDPL 3.1.0](http://github.com/lartu/ldpl), as it uses many of its new features.
+This library requires [LDPL 4.0](http://github.com/lartu/ldpl), as it uses many of its new features.
 
 You also need [libcurl](https://curl.haxx.se/libcurl/) with OpenSSL. For example, in Debian, Ubuntu or similar you can install it with:
 
