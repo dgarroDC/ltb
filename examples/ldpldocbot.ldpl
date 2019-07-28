@@ -13,8 +13,8 @@
 # |   if you press one it displays information about it |
 # +-----------------------------------------------------+
 
-IMPORT "../ltb.ldpl"
-IMPORT "token.ldpl"
+INCLUDE "../ltb.ldpl"
+INCLUDE "token.ldpl"
 
 DATA:
 
@@ -49,12 +49,12 @@ local data:
     statement is text
     inlineKeyboard is text
     key is text
-    keys is text map
+    keys is text list
     callbackData is text
 procedure:
     get index of "/ldpldoc" from messageText in i
     if i is equal to 0 then
-        store length of messageText in i
+        get length of messageText in i
         in i solve i - 8
         substring messageText from 8 length i in statement
         trim statement in statement
@@ -70,7 +70,7 @@ procedure:
     if i is equal to 0 then
         TG BOT CREATE INLINE KEYBOARD IN inlineKeyboard
         store 0 in i
-        store keys of quickinfo in keys
+        get keys of quickinfo in keys
         for each key in keys do
             TG BOT ADD BUTTON WITH TEXT key AND CALLBACK DATA key TO INLINE KEYBOARD inlineKeyboard
         repeat

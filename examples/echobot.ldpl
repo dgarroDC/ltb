@@ -9,8 +9,8 @@
 # | and when a user joins or leaves the chat |
 # +------------------------------------------+
 
-IMPORT "../ltb.ldpl"
-IMPORT "token.ldpl"
+INCLUDE "../ltb.ldpl"
+INCLUDE "token.ldpl"
 
 PROCEDURE:
 

@@ -17,7 +17,7 @@ And it announces you about new updates via the following sub-procedures that you
 
 ## Installation
 
-This library requires [LDPL 3.1.0](http://github.com/lartu/ldpl), as it uses many of its new features.
+This library requires [LDPL 4.0](http://github.com/lartu/ldpl), as it uses many of its new features.
 
 You also need [libcurl](https://curl.haxx.se/libcurl/) with OpenSSL. For example, in Debian, Ubuntu or similar you can install it with:
 

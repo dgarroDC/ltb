@@ -80,7 +80,7 @@ procedure:
             store "update_id" in ltb.json.in.value
             call external ltb.json.getValue
             store ltb.json.out.text in nextUpdateId
-            incr nextUpdateId
+            in nextUpdateId solve nextUpdateId + 1
 
             store "message" in ltb.json.in.value
             call external ltb.json.getValue
@@ -368,8 +368,8 @@ local data:
     button is text
 procedure:
     in button join "{\"text\":\"" text "\",\"" dataType "\":\"" data "\"}]]}"
-    store length of inlineKeyboard in length
-    subtract 4 from length in length
+    get length of inlineKeyboard in length
+    in length solve length - 4
     get index of "[]]}" from inlineKeyboard in i
     if i is not equal to length then
         # Last row is not empty
