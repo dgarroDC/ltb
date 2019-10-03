@@ -35,7 +35,8 @@ This statement will block your main code execution, unless there is a problem in
 
 After the bot is successfully initialized, `ltb` will process each update that your bot receives and calls a sub-procedure passing information about the new update. There are four of them, and you must implement it in your code:
 
-```
+### `ltb.onMessage`
+```coffeescript
 # This sub-procedure is called each time a new text message arrives.
 # Captions in animation, audio, document, photo, video or voice are captured too.
 sub ltb.onMessage
@@ -47,7 +48,10 @@ parameters:
 procedure:
     # Your code here
 end sub
+```
 
+### `ltb.onJoin`
+```coffeescript
 # This sub-procedure is called each time a user joins a chat.
 sub ltb.onJoin
 parameters:
@@ -57,7 +61,10 @@ parameters:
 procedure:
     # Your code here
 end sub
+```
 
+### `ltb.onDeparture`
+```coffeescript
 # This sub-procedure is called each time a user leaves a chat.
 sub ltb.onDeparture
 parameters:
@@ -67,7 +74,10 @@ parameters:
 procedure:
     # Your code here
 end sub
+```
 
+### `ltb.onCallbackQuery`
+```coffeescript
 # This sub-procedure is called each time a user press a button with callback data.
 sub ltb.onCallbackQuery
 parameters:
