@@ -8,25 +8,18 @@
 #include <iostream>
 #include <vector>
 #include "../thirdparty/json.hpp"
+#include "ldpl-types.h"
 
 using namespace std;
 using json = nlohmann::json;
 
-#ifndef ldpl_vector
-template<typename T>
-struct ldpl_list {
-    vector<T> inner_collection;
-};
-#endif
-#define ldpl_number double
-
-string LTB_JSON_IN_JSON;
-string LTB_JSON_IN_VALUE;
-string LTB_JSON_OUT_TEXT;
-ldpl_list<string> LTB_JSON_OUT_TEXTLIST;
+ldpl_text LTB_JSON_IN_JSON;
+ldpl_text LTB_JSON_IN_VALUE;
+ldpl_text LTB_JSON_OUT_TEXT;
+ldpl_list<ldpl_text> LTB_JSON_OUT_TEXTLIST;
 
 ldpl_number LTB_EC;
-string LTB_ET;
+ldpl_text LTB_ET;
 
 void SETERRORCODE();
 
@@ -35,7 +28,7 @@ void SETERRORCODE();
 void LTB_JSON_GETRESULT() {
     json j;
     try {
-        j = json::parse(LTB_JSON_IN_JSON);
+        j = json::parse(LTB_JSON_IN_JSON.str_rep());
     } catch (json::parse_error& e) {
         LTB_ET = "LTB JSON parse error #" + to_string(e.id) + ": " + string(e.what())
                + "\ninput JSON:\n" + LTB_JSON_IN_JSON;
@@ -61,15 +54,15 @@ void LTB_JSON_GETRESULT() {
 // Parse a JSON array as a TEXT LIST
 void LTB_JSON_GETTEXTLIST() {
     LTB_JSON_OUT_TEXTLIST.inner_collection.clear();
-    json j = json::parse(LTB_JSON_IN_JSON);
+    json j = json::parse(LTB_JSON_IN_JSON.str_rep());
     for (auto & element : j)
         LTB_JSON_OUT_TEXTLIST.inner_collection.push_back(element.dump());
 }
 
 // Get a value from a JSON, "" if not foud
 void LTB_JSON_GETVALUE() {
-    json j = json::parse(LTB_JSON_IN_JSON);
-    auto f = j.find(LTB_JSON_IN_VALUE);
+    json j = json::parse(LTB_JSON_IN_JSON.str_rep());
+    auto f = j.find(LTB_JSON_IN_VALUE.str_rep());
     if (f != j.end()) {
         LTB_JSON_OUT_TEXT = f->dump();
         if (f->type() == json::value_t::string)
