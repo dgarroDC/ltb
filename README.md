@@ -17,6 +17,31 @@ And it announces you about new updates via the following sub-procedures that you
 
 ## Installation
 
+You can install this library **by hand** or **using [LPM](https://github.com/Lartu/ldpl#-libraries)**.
+
+### 📦 Installing using LPM
+
+Open a terminal and write `lpm install ltb`. Once downloaded, include it in your LDPL project by adding the line:
+
+```coffeescript
+using package ltb
+```
+
+before the `data` and `procedure` sections of your source file. The library is ready to be used.
+
+### ✋🏻 Installing by hand
+
+Include the library into your LDPL project by copying the file *ltb.ldpl* and the folders *extensions* and *thirdparty* to your project directory and then adding the line:
+
+```coffeescript
+include "ltb.ldpl"
+```
+
+before the `data` and `procedure` sections of your source file. The library is
+ready to be used.
+
+### ⚠️ Note
+
 This library requires [LDPL 4.3](http://github.com/lartu/ldpl).
 
 You also need [libcurl](https://curl.haxx.se/libcurl/) with OpenSSL. For example, in Debian, Ubuntu or similar you can install it with:
